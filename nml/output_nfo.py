@@ -38,7 +38,7 @@ class OutputNFO(output_base.SpriteOutputBase):
         self.sprite_num = start_sprite_num
 
     def open(self):
-        self.file = io.StringIO()
+        self.file = []
 
     def open_file(self):
         handle = codecs.open(self.filename, 'w', encoding='utf-8')
@@ -52,41 +52,41 @@ class OutputNFO(output_base.SpriteOutputBase):
 
     def print_byte(self, value):
         value = self.prepare_byte(value)
-        self.file.write("\\b" + str(value) + " ")
+        self.file.append("\\b" + str(value) + " ")
 
     def print_bytex(self, value, pretty_print = None):
         value = self.prepare_byte(value)
         if pretty_print is not None:
-            self.file.write(pretty_print + " ")
+            self.file.append(pretty_print + " ")
             return
-        self.file.write("{:02X} ".format(value))
+        self.file.append("{:02X} ".format(value))
 
     def print_word(self, value):
         value = self.prepare_word(value)
-        self.file.write("\\w{:d} ".format(value))
+        self.file.append("\\w{:d} ".format(value))
 
     def print_wordx(self, value):
         value = self.prepare_word(value)
-        self.file.write("\\wx{:04X} ".format(value))
+        self.file.append("\\wx{:04X} ".format(value))
 
     def print_dword(self, value):
         value = self.prepare_dword(value)
-        self.file.write("\\d{:d} ".format(value))
+        self.file.append("\\d{:d} ".format(value))
 
     def print_dwordx(self, value):
         value = self.prepare_dword(value)
-        self.file.write("\\dx{:08X} ".format(value))
+        self.file.append("\\dx{:08X} ".format(value))
 
     def print_string(self, value, final_zero = True, force_ascii = False):
         assert self.in_sprite
-        self.file.write('"')
+        self.file.append('"')
         if not grfstrings.is_ascii_string(value):
             if force_ascii:
                 raise generic.ScriptError("Expected ascii string but got a unicode string")
-            self.file.write('Þ') # b'\xC3\x9E'.decode('utf-8')
-        self.file.write(value.replace('"', '\\"'))
+            self.file.append('Þ') # b'\xC3\x9E'.decode('utf-8')
+        self.file.append(value.replace('"', '\\"'))
         self.byte_count += grfstrings.get_string_size(value, final_zero, force_ascii)
-        self.file.write('" ')
+        self.file.append('" ')
         if final_zero:
             self.print_bytex(0)
             # get_string_size already includes the final 0 byte
@@ -96,21 +96,21 @@ class OutputNFO(output_base.SpriteOutputBase):
 
     def print_decimal(self, value):
         assert self.in_sprite
-        self.file.write(str(value) + " ")
+        self.file.append(str(value) + " ")
 
     def newline(self, msg = "", prefix = "\t"):
         if msg != "": msg = prefix + "// " + msg
-        self.file.write(msg + "\n")
+        self.file.append(msg + "\n")
 
     def comment(self, msg):
-        self.file.write("// " + msg + "\n")
+        self.file.append("// " + msg + "\n")
 
     def start_sprite(self, size, is_real_sprite = False):
         output_base.SpriteOutputBase.start_sprite(self, size)
         self.print_decimal(self.sprite_num)
         self.sprite_num += 1
         if not is_real_sprite:
-            self.file.write("* ")
+            self.file.append("* ")
             self.print_decimal(size)
 
     def print_sprite(self, sprite_list):
@@ -120,28 +120,28 @@ class OutputNFO(output_base.SpriteOutputBase):
         """
         self.start_sprite(0, True)
         for i, sprite_info in enumerate(sprite_list):
-            self.file.write(sprite_info.file.value + " ")
-            self.file.write(bit_depths[sprite_info.bit_depth] + " ")
+            self.file.append(sprite_info.file.value + " ")
+            self.file.append(bit_depths[sprite_info.bit_depth] + " ")
             self.print_decimal(sprite_info.xpos.value)
             self.print_decimal(sprite_info.ypos.value)
             self.print_decimal(sprite_info.xsize.value)
             self.print_decimal(sprite_info.ysize.value)
             self.print_decimal(sprite_info.xrel.value)
             self.print_decimal(sprite_info.yrel.value)
-            self.file.write(zoom_levels[sprite_info.zoom_level] + " ")
+            self.file.append(zoom_levels[sprite_info.zoom_level] + " ")
             if (sprite_info.flags.value & real_sprite.FLAG_NOCROP) != 0:
-                self.file.write("nocrop ")
+                self.file.append("nocrop ")
             if sprite_info.mask_file is not None:
                 self.newline()
-                self.file.write("|\t")
-                self.file.write(sprite_info.mask_file.value)
-                self.file.write(" mask ")
+                self.file.append("|\t")
+                self.file.append(sprite_info.mask_file.value)
+                self.file.append(" mask ")
                 mask_x, mask_y = sprite_info.mask_pos if sprite_info.mask_pos is not None else (sprite_info.xpos, sprite_info.ypos)
                 self.print_decimal(mask_x.value)
                 self.print_decimal(mask_y.value)
             if i + 1 < len(sprite_list):
                 self.newline()
-                self.file.write("|\t")
+                self.file.append("|\t")
         self.end_sprite()
 
     def print_empty_realsprite(self):
@@ -151,5 +151,5 @@ class OutputNFO(output_base.SpriteOutputBase):
 
     def print_named_filedata(self, filename):
         self.start_sprite(0, True)
-        self.file.write("** " + filename)
+        self.file.append("** " + filename)
         self.end_sprite()

@@ -63,7 +63,8 @@ class OutputBase:
         @param real_file: Actual output stream.
         @type  real_file: C{io.IOBase}
         """
-        real_file.write(self.file.getvalue())
+        #real_file.write(self.file.getvalue())
+        real_file.write(''.join(self.file))
 
     def discard(self):
         """
