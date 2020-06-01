@@ -79,7 +79,8 @@ class SpriteGroupRef(Expression):
         return True
 
     def collect_references(self):
-        return [self]
+        from itertools import chain
+        return [self] + list(chain.from_iterable(p.collect_references() for p in self.param_list))
 
     def type(self):
         if self.is_procedure: return Type.INTEGER
