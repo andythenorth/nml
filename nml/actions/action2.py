@@ -101,9 +101,10 @@ class Action2(base_action.BaseAction):
         except IndexError:
             raise generic.ScriptError("Unable to allocate ID for [random]switch, sprite set/layout/group or produce-block. Try reducing the number of such blocks.", self.pos)
 
-    def write_sprite_start(self, file, size):
+    def write_sprite_start(self, file, size, extra_comment = []):
         assert self.num_refs == 0, "Action2 reference counting has {:d} dangling references.".format(self.num_refs)
         file.comment("Name: " + self.name)
+        for c in extra_comment: file.comment(c)
         file.start_sprite(size + 3)
         file.print_bytex(2)
         file.print_bytex(self.feature)
