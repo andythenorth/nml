@@ -81,8 +81,8 @@ class Switch(switch_base_class):
         if isinstance(self.expr, expression.ConstantNumeric):
             for r in self.body.ranges[:]:
                 if r.min.value <= self.expr.value <= r.max.value:
-                    generic.print_warning(
-                        "Block '{}' returns a constant, optimising.".format(self.name.value), self.pos
+                    generic.print_info(
+                        "Block '{}' returns a constant, optimising.".format(self.name.value)
                     )
                     self.optimised = r.result.value
                     return True
@@ -92,7 +92,7 @@ class Switch(switch_base_class):
             and self.body.default.value is not None
             and (len(self.body.ranges) == 0 or isinstance(self.expr, expression.ConstantNumeric))
         ):
-            generic.print_warning("Block '{}' returns a constant, optimising.".format(self.name.value), self.pos)
+            generic.print_info("Block '{}' returns a constant, optimising.".format(self.name.value))
             self.optimised = self.body.default.value
             return True
         return False
@@ -171,7 +171,7 @@ class SwitchBody:
             if len(self.ranges) != 0:
                 if any(self.default.value != r.result.value for r in self.ranges):
                     return
-                generic.print_warning("Switch-Block ranges are the same as default, optimising.", self.default.pos)
+                generic.print_info("Switch-Block ranges are the same as default, optimising.")
                 self.ranges = []
 
     def debug_print(self, indentation):
