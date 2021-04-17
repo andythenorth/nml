@@ -80,37 +80,24 @@ class Switch(switch_base_class):
 
     def optimise(self):
         if self.optimised:
-            return self.optimised is not self
-
-        # Constant condition, pick the right result
+            return True
         if isinstance(self.expr, expression.ConstantNumeric):
             for r in self.body.ranges[:]:
                 if r.min.value <= self.expr.value <= r.max.value:
-                    self.optimised = r.result.value if r.result.value else self.expr
-            if not self.optimised and self.body.default:
-                self.optimised = self.body.default.value if self.body.default.value else self.expr
-
-        # Default result only
-        if not self.optimised and self.expr.is_read_only() and self.body.default and len(self.body.ranges) == 0:
-            self.optimised = self.body.default.value
-
-        # If we return an expression, just rewrite ourself to keep the correct scope
-        # so a return action with the wrong scope doesn't need to be created later
+                    generic.print_warning(
+                        "Block '{}' returns a constant, optimising.".format(self.name.value), self.pos
+                    )
+                    self.optimised = r.result.value
+                    return True
         if (
-            self.optimised
-            and not isinstance(self.optimised, expression.ConstantNumeric)
-            and not isinstance(self.optimised, expression.SpriteGroupRef)
+            self.expr.is_read_only()
+            and self.body.default is not None
+            and self.body.default.value is not None
+            and (len(self.body.ranges) == 0 or isinstance(self.expr, expression.ConstantNumeric))
         ):
-            self.expr = self.optimised
-            self.body.ranges = []
-            self.body.default = SwitchValue(None, True, self.optimised.pos)
-            self.optimised = self
-
-        if self.optimised:
             generic.print_warning("Block '{}' returns a constant, optimising.".format(self.name.value), self.pos)
-            return self.optimised is not self
-
-        self.optimised = self  # Prevent multiple run on the same non optimisable Switch
+            self.optimised = self.body.default.value
+            return True
         return False
 
     def collect_references(self):
@@ -371,23 +358,14 @@ class RandomSwitch(switch_base_class):
 
     def optimise(self):
         if self.optimised:
-            return self.optimised is not self
-
-        # Triggers have side-effects, and can't be skipped.
-        # Scope for expressions can be different in referencing location, so don't optimise them.
-        if (
-            self.triggers.value == 0
-            and len(self.choices) == 1
-            and (
-                isinstance(self.choices[0].result.value, expression.ConstantNumeric)
-                or isinstance(self.choices[0].result.value, expression.SpriteGroupRef)
-            )
-        ):
+            return True
+        if self.triggers.value != 0:
+            # Triggers have side-effects, and can't be skipped.
+            return False
+        if len(self.choices) == 1:
             generic.print_warning("Block '{}' returns a constant, optimising.".format(self.name.value), self.pos)
             self.optimised = self.choices[0].result.value
             return True
-
-        self.optimised = self  # Prevent multiple run on the same non optimisable RandomSwitch
         return False
 
     def collect_references(self):
