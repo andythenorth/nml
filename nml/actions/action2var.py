@@ -703,7 +703,11 @@ class Varaction2Parser:
 
 def parse_var(name, info, pos):
     if "replaced_by" in info:
-        generic.print_warning("'{}' is deprecated, consider using '{}' instead".format(name, info["replaced_by"]), pos)
+        generic.print_warning(
+            "'{}' is deprecated, consider using '{}' instead".format(name, info["replaced_by"]),
+            pos,
+            generic.Warning.DEPRECATION,
+        )
     param = expression.ConstantNumeric(info["param"]) if "param" in info else None
     res = expression.Variable(
         expression.ConstantNumeric(info["var"]),

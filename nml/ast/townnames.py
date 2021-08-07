@@ -144,7 +144,9 @@ class TownNamesPart:
         for piece in self.pieces:
             piece.pre_process()
             if piece.probability.value == 0:
-                generic.print_warning("Dropping town name piece with 0 probability.", piece.pos)
+                generic.print_warning(
+                    "Dropping town name piece with 0 probability.", piece.pos, generic.Warning.OPTIMISATION
+                )
             else:
                 new_pieces.append(piece)
 

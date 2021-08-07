@@ -310,7 +310,7 @@ def parse_graphics_block_single_id(
 
                 for info in info_list:
                     if "deprecate_message" in info:
-                        generic.print_warning(info["deprecate_message"], cargo_id.pos)
+                        generic.print_warning(info["deprecate_message"], cargo_id.pos, generic.Warning.DEPRECATION)
                     if house_tile is not None and "tiles" in info and house_tile not in info["tiles"]:
                         continue
 

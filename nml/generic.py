@@ -296,6 +296,13 @@ class OnlyOnce:
         cls.seen = {}
 
 
+class Warning:
+    GENERIC = 0
+    DEPRECATION = 1
+    OPTIMISATION = 2
+    disabled = None
+
+
 VERBOSITY_WARNING = 1  # Verbosity level for warnings
 VERBOSITY_INFO = 2  # Verbosity level for info messages
 VERBOSITY_PROGRESS = 3  # Verbosity level for progress feedback
@@ -409,11 +416,13 @@ def print_info(msg):
     show_progress()
 
 
-def print_warning(msg, pos=None):
+def print_warning(msg, pos=None, type=Warning.GENERIC):
     """
     Output a warning message to the user.
     """
     if verbosity_level < VERBOSITY_WARNING:
+        return
+    if Warning.disabled and type in Warning.disabled:
         return
     if pos:
         msg = str(pos) + ": " + msg

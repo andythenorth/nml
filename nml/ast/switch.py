@@ -110,7 +110,11 @@ class Switch(switch_base_class):
             self.optimised = self
 
         if self.optimised:
-            generic.print_warning("Block '{}' returns a constant, optimising.".format(self.name.value), self.pos)
+            generic.print_warning(
+                "Block '{}' returns a constant, optimising.".format(self.name.value),
+                self.pos,
+                generic.Warning.OPTIMISATION,
+            )
             return self.optimised is not self
 
         self.optimised = self  # Prevent multiple run on the same non optimisable Switch
@@ -190,7 +194,11 @@ class SwitchBody:
             if len(self.ranges) != 0:
                 if any(self.default.value != r.result.value for r in self.ranges):
                     return
-                generic.print_warning("Switch-Block ranges are the same as default, optimising.", self.default.pos)
+                generic.print_warning(
+                    "Switch-Block ranges are the same as default, optimising.",
+                    self.default.pos,
+                    generic.Warning.OPTIMISATION,
+                )
                 self.ranges = []
 
     def debug_print(self, indentation):
@@ -385,7 +393,11 @@ class RandomSwitch(switch_base_class):
                 or (isinstance(optimised, expression.SpriteGroupRef) and not optimised.is_procedure)
                 or isinstance(optimised, expression.String)
             ):
-                generic.print_warning("Block '{}' returns a constant, optimising.".format(self.name.value), self.pos)
+                generic.print_warning(
+                    "Block '{}' returns a constant, optimising.".format(self.name.value),
+                    self.pos,
+                    generic.Warning.OPTIMISATION,
+                )
                 self.optimised = optimised
                 return True
 

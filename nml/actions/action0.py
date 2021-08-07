@@ -476,7 +476,9 @@ def get_property_info_list(feature, name):
     for prop_info in prop_info_list:
         if "replaced_by" in prop_info:
             generic.print_warning(
-                "'{}' is deprecated, consider using '{}' instead".format(prop_name, prop_info["replaced_by"]), name.pos
+                "'{}' is deprecated, consider using '{}' instead".format(prop_name, prop_info["replaced_by"]),
+                name.pos,
+                generic.Warning.DEPRECATION,
             )
         if "warning" in prop_info:
             generic.print_warning(prop_info["warning"], name.pos)

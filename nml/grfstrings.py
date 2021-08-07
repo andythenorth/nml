@@ -653,7 +653,9 @@ class NewGRFString:
                 raise generic.ScriptError('Undefined command "{}"'.format(command_name), pos)
             if command_name in commands and "deprecated" in commands[command_name]:
                 generic.print_warning(
-                    "String code '{}' has been deprecated and will be removed soon".format(command_name), pos
+                    "String code '{}' has been deprecated and will be removed soon".format(command_name),
+                    pos,
+                    generic.Warning.DEPRECATION,
                 )
                 del commands[command_name]["deprecated"]
             #
