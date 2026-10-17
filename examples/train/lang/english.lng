@@ -14,4 +14,4 @@ STR_ICM_SUBTYPE_4_PART                                          : (4 parts)
 STR_ICM_CANNOT_START                                            :... train too long (max. 4 coupled EMUs).
 STR_ICM_CANNOT_ATTACH_OTHER                                     :... ICM may not be attached to other types of trains.
 
-STR_CARGO_WAGON_1_NAME                                          :Cargo Wagon
+STR_CARGO_WAGON_1_NAME                                          :Cargo Wagon CABBAGE

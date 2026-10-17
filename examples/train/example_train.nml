@@ -325,7 +325,7 @@ if (version_openttd(1,2,0,22713) < openttd_version) {
 spriteset (set_cargo_wagon,        "cargo_wagons.png") { tmpl_vehicle_4_views(0)    }
 spriteset (set_cargo_wagon_load,   "cargo_wagons.png") { tmpl_vehicle_4_views(1)    }
 
-switch (FEAT_TRAINS, SELF, cargo_wagon_switch_vehicle, STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100)) {
+switch (FEAT_TRAINS, SELF, cargo_wagon_switch_vehicle, STORE_TEMP(CB_FLAG_MORE_SPRITES | 0x40000001, 0x100)) {
     return set_cargo_wagon;
 }
 
@@ -347,6 +347,7 @@ item(FEAT_TRAINS, cargo_wagon_1) {
         refittable_cargo_classes: bitmask(CC_PIECE_GOODS);
         sprite_id: SPRITE_ID_NEW_TRAIN;
         misc_flags: bitmask(TRAIN_FLAG_SPRITE_STACK);
+        extra_flags: bitmask(VEHICLE_FLAG_CABBAGE_1, VEHICLE_FLAG_CABBAGE_2);
         cargo_capacity: 40;
         weight: 20 ton;
         power: 0hp;
@@ -354,5 +355,41 @@ item(FEAT_TRAINS, cargo_wagon_1) {
     graphics {
         default: cargo_wagon_switch_graphics;
         purchase: cargo_wagon_switch_graphics;
+    }
+}
+
+spriteset (set_cargo_wagon_foo,        "cargo_wagons_foo.png") { tmpl_vehicle_4_views(0)    }
+spriteset (set_cargo_wagon_load_foo,   "cargo_wagons_foo.png") { tmpl_vehicle_4_views(1)    }
+
+switch (FEAT_TRAINS, SELF, cargo_wagon_switch_vehicle_foo, STORE_TEMP(CB_FLAG_MORE_SPRITES | 0x40000001, 0x100)) {
+    return set_cargo_wagon_foo;
+}
+
+switch (FEAT_TRAINS, SELF, cargo_wagon_switch_load_foo, STORE_TEMP(PALETTE_USE_DEFAULT, 0x100)) {
+    return set_cargo_wagon_load_foo;
+}
+
+switch (FEAT_TRAINS, SELF, cargo_wagon_switch_graphics_foo, getbits(extra_callback_info1, 8, 8)) {
+    0: return cargo_wagon_switch_vehicle_foo;
+    return cargo_wagon_switch_load_foo;
+}
+
+item(FEAT_TRAINS, cargo_wagon_2) {
+    property {
+        name: string(STR_CARGO_WAGON_1_NAME);
+        climates_available: ALL_CLIMATES;
+        introduction_date: date(1900, 1, 1);
+        model_life: VEHICLE_NEVER_EXPIRES;
+        refittable_cargo_classes: bitmask(CC_PIECE_GOODS);
+        sprite_id: SPRITE_ID_NEW_TRAIN;
+        misc_flags: bitmask(TRAIN_FLAG_SPRITE_STACK);
+        extra_flags: bitmask(VEHICLE_FLAG_CABBAGE_1, VEHICLE_FLAG_CABBAGE_2);
+        cargo_capacity: 40;
+        weight: 20 ton;
+        power: 0hp;
+    }
+    graphics {
+        default: cargo_wagon_switch_graphics_foo;
+        purchase: cargo_wagon_switch_graphics_foo;
     }
 }
